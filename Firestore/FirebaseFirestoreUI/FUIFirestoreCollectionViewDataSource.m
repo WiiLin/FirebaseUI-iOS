@@ -107,6 +107,14 @@
 
 - (void)batchedArray:(FUIBatchedArray *)array
    didUpdateWithDiff:(FUISnapshotArrayDiff<FIRDocumentSnapshot *> *)diff {
+    if (1 == diff.changedIndexes.count) {
+        NSArray<NSIndexPath *>* visibleItems = [self.collectionView indexPathsForVisibleItems];
+        NSIndexPath *changed = [NSIndexPath indexPathForItem:diff.changedIndexes[0].integerValue inSection:0];
+        if (![visibleItems containsObject:changed]) {
+            return;
+        }
+    }
+    [UIView setAnimationsEnabled:NO];
   [self.collectionView performBatchUpdates:^{
 
     NSMutableArray *deletedIndexPaths =
@@ -155,6 +163,7 @@
       [movedIndexPaths addObject:moved];
     }
     [self.collectionView reloadItemsAtIndexPaths:movedIndexPaths];
+      [UIView setAnimationsEnabled:YES];
   }];
 }
 
